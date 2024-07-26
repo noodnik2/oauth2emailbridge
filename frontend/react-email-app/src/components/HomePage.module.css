@@ -1,0 +1,9 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+.content {
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 60px);
+}

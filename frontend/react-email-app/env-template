@@ -1,0 +1,11 @@
+#
+# Set the parameter values needed (below) in a copy of this file named ".env.local"
+# See the README file and the internet for hints about obtaining these values
+#
+
+# PORT is the local port this React front-end app will open
+PORT=8080
+
+# NOTE: if necessary, replace 'your_backend_url_prefix' with what's needed to access the backend
+# (e.g., something like `https://b542-79-123-14-71.ngrok-free.app` if using `ngrok` proxy, etc.)
+REACT_APP_BACKEND_URL_PREFIX=http://localhost:3000
