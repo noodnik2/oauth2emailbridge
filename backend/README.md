@@ -1,14 +1,44 @@
 # Backend
 
+A backend application built atop [Express.js](https://expressjs.com/) that
+interacts with OAuth2 Token Authorities (such as provided by Google or
+Microsoft) on behalf of a user for retrieving access tokens needed to provide
+delegated access to protected resources controlled by those authorities.
+
 ## Setup
 
-Notes specific to the Mail Bridge implementations for each Service Provider can
-be found in sub-README files:
+Notes about setting up & registering your OAuth2 token providers, and
+about the OAuth2 Email Bridge implementations specific to each Service Provider
+can be found in sub-README files:
 
 - [README-Google](./README-Google.md)
 - [README-Microsoft](./README-Microsoft.md)
 
-## Testing
+
+## Running & Testing
+
+Once you've set the needed configuration values in the `.env` file for each
+Service Provider you wish to use (see _Setup_ above), you can focus on starting
+the backend application.
+
+A normal procedure for installing the `npm` dependencies should be done first,
+as illustrated in the console excerpt below.
+
+- _NOTE: the versions of `npm` and `node` are highlighted only for context
+  about the depicted working console session:_
+
+```shell
+$ npm -version
+9.8.0
+$ node --version
+v18.15.0
+$ rm -rf dist node_modules/
+$ npm install
+...
+added 215 packages, and audited 216 packages in 3s
+...
+found 0 vulnerabilities
+```
 
 After setting up the backend for the Service Provider(s) you wish to use,
 you can run the backend application using the standard `npm` commands, e.g.:

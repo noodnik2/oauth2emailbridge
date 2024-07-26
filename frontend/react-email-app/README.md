@@ -15,9 +15,29 @@ copying the `env-template` into (for example) `.env.local` before starting.  Not
 - See [Environment Variables](https://create-react-app.dev/docs/adding-custom-environment-variables/)
   for more information about configuring React apps.
 
+A normal procedure for installing the `npm` dependencies should be done first,
+as illustrated in the console excerpt below.
+
+- _NOTE: the versions of `npm` and `node` are highlighted only for context
+  about the depicted working console session:_
+
+```shell
+$ npm -version
+9.8.0
+$ node --version
+v18.15.0
+$ rm -rf dist node_modules/
+$ npm install
+...
+added 1532 packages, and audited 1533 packages in 10s
+...
+found 0 vulnerabilities
+```
+
 ## Available Scripts
 
-In the project directory, you can run:
+After installing all of the dependencies (see _Setup_ above), in the project directory,
+you can run:
 
 ### `npm start`
 

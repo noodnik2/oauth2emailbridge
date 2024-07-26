@@ -20,28 +20,3 @@ Content-Type: application/json
     "expiry_date": 1721267748686
   }
 }
-###
-
-### Graph API
-GET https://login.microsoftonline.com/04fb7cb2-dce6-4a9e-8844-34052a96e022/oauth2/v2.0/authorize?
-    client_id=ab0a5453-5299-47f8-b82a-6a3017bfbe64&
-    response_type=code&
-    redirect_uri=https%3A%2F%2Fa846-76-133-19-42.ngrok-free.app%2Fapi%2Femail%2Foauth-callback&
-    response_mode=query&
-    scope=ab0a5453-5299-47f8-b82a-6a3017bfbe64%2F.default&
-    state={"provider":"msal","returnTo":"http://localhost:8080/","sessionId":"123"}
-Content-Type: application/json
-
-###
-
-# curl -X GET --location "https://login.microsoftonline.com/04fb7cb2-dce6-4a9e-8844-34052a96e022/oauth2/v2.0/authorize?client_id=ab0a5453-5299-47f8-b82a-6a3017bfbe64&response_type=code&redirect_uri=https%3A%2F%2Fa846-76-133-19-42.ngrok-free.app%2Fapi%2Femail%2Foauth-callback&response_mode=query&scope=ab0a5453-5299-47f8-b82a-6a3017bfbe64%2F.default&state=%7B%22provider%22%3A%22msal%22%2C%22returnTo%22%3A%22http%3A%2F%2Flocalhost%3A8080%2F%22%2C%22sessionId%22%3A%22123%22%7D"
-#    -H "Content-Type: application/json"
-GET https://login.microsoftonline.com/04fb7cb2-dce6-4a9e-8844-34052a96e022/oauth2/v2.0/authorize?
-    client_id=ab0a5453-5299-47f8-b82a-6a3017bfbe64&response_type=code&
-    redirect_uri=https%3A%2F%2Fa846-76-133-19-42.ngrok-free.app%2Fapi%2Femail%2Foauth-callback&response_mode=query&
-    scope=ab0a5453-5299-47f8-b82a-6a3017bfbe64%2F.default&
-    state=%7B%22provider%22%3A%22msal%22%2C%22returnTo%22%3A%22http%3A%2F%2Flocalhost%3A8080%2F%22%2C%22sessionId%22%3A%22123%22%7D
-Content-Type: application/json
-
-###
-

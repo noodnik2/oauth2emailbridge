@@ -1,4 +1,4 @@
-import React, {EventHandler, useState} from 'react';
+import React, {useState} from 'react';
 import styles from './MenuBar.module.css';
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import AuthButton from "./AuthButton";
