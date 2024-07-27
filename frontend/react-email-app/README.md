@@ -1,4 +1,4 @@
-# Frontend React App
+# Frontend
 
 This `OAuth2 Email Bridge` frontend was bootstrapped with [Create React App](https://github.com/facebook/create-react-app); 
 accordingly, it can be managed using the relevant tooling and related infrastructure.
