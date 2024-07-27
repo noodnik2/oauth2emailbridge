@@ -14,7 +14,9 @@ Towards the end of the demo, the "sequence log" (recorded by the application to 
 actions taken by the user) is pasted into [websequencediagrams.com](https://www.websequencediagrams.com)
 to illustrate the OAuth2 flow that transpired.
 
-![240727-oauth2emailbridge-demo.mov](./resources/240727-oauth2emailbridge-demo.mov)
+
+https://github.com/user-attachments/assets/8e97874b-09f2-47db-bf91-2f531c6d0e77
+
 
 ## Components
 
