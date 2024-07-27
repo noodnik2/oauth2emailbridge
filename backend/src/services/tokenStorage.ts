@@ -1,7 +1,6 @@
 
 
 export interface Tokens {
-    provider: string;
     userId?: string; // TODO remove this?  Only used now for msal
     accessToken: string;
     refreshToken?: string;
@@ -10,12 +9,17 @@ export interface Tokens {
     expiryDate?: number;
 }
 
-const tokenStore: { [key: string]: Tokens } = {};
+export interface ProviderTokens {
+    provider: string;
+    tokens: Tokens;
+}
 
-export const saveTokens = (userId: string, tokens: Tokens): void => {
-    tokenStore[userId] = tokens;
+const tokenStore: { [key: string]: ProviderTokens } = {};
+
+export const saveProviderTokens = (userId: string, providerTokens: ProviderTokens): void => {
+    tokenStore[userId] = providerTokens;
 };
 
-export const getTokens = (userId: string): Tokens | undefined => {
+export const getProviderTokens = (userId: string): ProviderTokens | undefined => {
     return tokenStore[userId];
 };

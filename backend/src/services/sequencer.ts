@@ -82,6 +82,15 @@ export class FluentSequencer {
         return this;
     }
 
+    /**
+     * @param text text to note
+     * @param who actor over whom the text will be placed
+     */
+    public noteOver(text: string, ...who: actor[]): FluentSequencer {
+        this.appendSequenceLog(`note over ${who.join(",")}: ${text}`);
+        return this;
+    }
+
 
     private appenddSequenceFlow(from: actor, type: string, to: actor, what: string): void {
         this.appendSequenceLog(`${from} ${type} ${to}: ${what}`);

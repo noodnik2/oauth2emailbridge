@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
 import {newGoogleOAuth2Client} from "./googleAuthService";
 import {gmail_v1, google} from "googleapis";
-import {EmailEntry} from "./authService";
 import {Tokens} from "./tokenStorage";
+import {EmailEntry, EmailService, Emails} from "./emailService";
 
 /**
  * sendGoogleEmail - sends email on behalf of the authenticated & authorized OAuth2 user.
@@ -11,7 +11,7 @@ import {Tokens} from "./tokenStorage";
  * @param text message body text
  * @param tokens OAuth2 authorization tokens, including the access token
  */
-export const sendGoogleEmail = async (to: string, subject: string, text: string, tokens: Tokens) => {
+const sendGoogleEmail = async (to: string, subject: string, text: string, tokens: Tokens) => {
 
     const { email } = await newGoogleOAuth2Client().getTokenInfo(tokens.accessToken);
 
@@ -30,20 +30,12 @@ export const sendGoogleEmail = async (to: string, subject: string, text: string,
     await transport.sendMail({ from: email, to, subject, text, });
 };
 
-// export interface EmailEntry {
-//     id: string | null | undefined;
-//     from: string | null | undefined;
-//     date: string | null | undefined;
-//     internalDate: string | null | undefined;
-//     snippet: string | null | undefined;
-// }
-
 /**
  * listGoogleEmails - fetches a "page" of emails on behalf of the authenticated & authorized OAuth2 user.
  * @param pageToken pointer to which "page" should be loaded, or empty to start at first page
  * @param tokens OAuth2 authorization tokens, including the access token
  */
-export const listGoogleEmails = async (pageToken: string, tokens: any) => {
+const listGoogleEmails = async (pageToken: string, tokens: any): Promise<Emails> => {
 
     // TODO unify with creation of client elsewhere
     const oauth2Client = new google.auth.OAuth2(
@@ -97,9 +89,22 @@ export const listGoogleEmails = async (pageToken: string, tokens: any) => {
         (a, b) => parseInt(b.internalDate || '0') - parseInt(a.internalDate || '0')
     );
 
-    return {
+    return <Emails>{
         emails,
         nextPageToken: response.data.nextPageToken,
     };
 
 }
+
+export class GoogleEmailService implements EmailService {
+
+    async sendOAuthEmail(to: string, subject: string, text: string, tokens: Tokens): Promise<void> {
+        await sendGoogleEmail(to, subject, text, tokens);
+    }
+
+    async listOAuthEmails(pageToken: string, tokens: Tokens): Promise<Emails> {
+        return listGoogleEmails(pageToken, tokens);
+    }
+
+}
+

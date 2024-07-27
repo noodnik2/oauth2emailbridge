@@ -1,6 +1,8 @@
 import {AuthenticationResult, ConfidentialClientApplication, Configuration, LogLevel} from '@azure/msal-node';
-import { Client } from '@microsoft/microsoft-graph-client';
+import {Client} from '@microsoft/microsoft-graph-client';
 import 'isomorphic-fetch';
+import {AuthService} from "./authService";
+import {Tokens} from "./tokenStorage";
 
 // Initialize the MSAL application object
 export const getMsalConfig = (): Configuration => {
@@ -31,14 +33,12 @@ const SCOPES = [
     "user.read",
     "mail.read",
     "mail.readwrite",
-    "Directory.Read.All",
-    "Directory.ReadWrite.All",
     'email',    // access to user's primary email address
     'openid',   // access to the 'UserInfo' endpoint
     'profile',  // information about the user
 ];
 
-export const newMsalClient = (): ConfidentialClientApplication => {
+const newMsalClient = (): ConfidentialClientApplication => {
     return new ConfidentialClientApplication(getMsalConfig());
 }
 
@@ -51,7 +51,7 @@ export const getAuthenticatedClient = (accessToken: any) => {
     });
 }
 
-export const getMsalAuthUrl = async (state: any): Promise<string> => {
+const getMsalAuthUrl = async (state: any): Promise<string> => {
 
     // TODO validate parameters & return error
 
@@ -64,17 +64,37 @@ export const getMsalAuthUrl = async (state: any): Promise<string> => {
     return await newMsalClient().getAuthCodeUrl(authCodeUrlParameters);
 };
 
-// getMsalTokens returns the tokens resulting from the completed authentication step.
-export const getMsalTokens = async (code: string): Promise<AuthenticationResult> => {
+/**
+ * getMsgraphTokens returns the tokens resulting from the completed authentication step.
+ * @param code - authorization code for which tokens are desired
+ */
+const getMsgraphTokens = async (code: string): Promise<AuthenticationResult> => {
     const tokenRequest = {
         code: code,
         scopes: SCOPES,
         redirectUri: process.env.MICROSOFT_REDIRECT_URI ?? '',
     };
 
-    console.log(`acquireTokenByCode(${JSON.stringify(tokenRequest)})`);
-    const x = await newMsalClient().acquireTokenByCode(tokenRequest);
-    console.log(` --> (${JSON.stringify(x)})`);
-    return x;
+    console.debug(`acquireTokenByCode(${JSON.stringify(tokenRequest)})`);
+    const ar = await newMsalClient().acquireTokenByCode(tokenRequest);
+    console.debug(` --> (${JSON.stringify(ar)})`);
+    return ar;
 };
 
+export class MsgraphAuthService implements AuthService {
+
+    async getOAuthUrl(state: any): Promise<string> {
+        return await getMsalAuthUrl(state);
+    }
+
+    async getOAuthTokens(code: string): Promise<Tokens> {
+        const msgt = await getMsgraphTokens(code);
+        console.debug(`getMsalTokens returned(${JSON.stringify(msgt)})`);
+        return <Tokens>{
+            userId: msgt.account?.homeAccountId,
+            accessToken: msgt.accessToken,
+            expiryDate: msgt.expiresOn?.getTime(),
+        };
+    }
+
+}

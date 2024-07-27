@@ -1,4 +1,6 @@
-import {OAuth2Client} from "google-auth-library";
+import {Credentials, OAuth2Client} from "google-auth-library";
+import {Tokens} from "./tokenStorage";
+import {AuthService} from "./authService";
 
 // see: https://developers.google.com/identity/protocols/oauth2/scopes
 const SCOPES = [
@@ -17,7 +19,7 @@ export const newGoogleOAuth2Client = (): OAuth2Client => {
 
 // getGoogleAuthUrl generates the URL to the authentication page of the Service Provider (e.g., Gmail).
 // state - used to carry context forward, passed to the callback as JSON
-export const getGoogleAuthUrl = (state: any): string => {
+const getGoogleAuthUrl = (state: any): string => {
   return newGoogleOAuth2Client().generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
@@ -27,8 +29,26 @@ export const getGoogleAuthUrl = (state: any): string => {
 };
 
 // getGoogleTokens returns the tokens resulting from the completed authentication step.
-export const getGoogleTokens = async (code: string) => {
-  const { tokens } = await newGoogleOAuth2Client().getToken(code);
-  return tokens;
+const getGoogleTokens = async (code: string): Promise<Credentials> => {
+    const gtr = await newGoogleOAuth2Client().getToken(code);
+    return gtr.tokens;
 };
 
+export class GoogleAuthService implements AuthService {
+
+    async getOAuthUrl(state: any): Promise<string> {
+        return getGoogleAuthUrl(state);
+    }
+
+    async getOAuthTokens(code: string): Promise<Tokens> {
+        const gt = await getGoogleTokens(code);
+        return <Tokens>{
+            refreshToken: gt.refresh_token,
+            accessToken: gt.access_token,
+            expiryDate: gt.expiry_date!,
+            tokenType: gt.token_type!,
+            scope: gt.scope,
+        };
+    }
+
+}

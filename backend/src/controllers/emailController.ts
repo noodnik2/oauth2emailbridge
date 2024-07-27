@@ -1,8 +1,9 @@
 import {Request, Response} from 'express';
-import {getTokens, saveTokens} from "../services/tokenStorage";
+import {getProviderTokens, saveProviderTokens} from "../services/tokenStorage";
 import {parseJson} from "../utils/parsers";
 import {actor, getSequencer} from "../services/sequencer";
-import {getOAuthTokens, getOAuthUrl, listOAuthEmails, sendOAuthEmail} from "../services/authService";
+import {getEmailService} from "../services/emailService";
+import {getAuthService} from "../services/authService";
 
 /**
  * oauthCallback - responds to the "back channel" callback from OAuth2, and requires:
@@ -23,20 +24,25 @@ export const oauthCallback = async (req: Request, res: Response) => {
   try {
 
     getSequencer()
-        .message(actor.SP, actor.C, `OAuth2 callback`)
-        .activate(actor.SP, actor.C)
+        .response(actor.SP, actor.U, `redirect to OAuth2 callback`)
+        .deactivate(actor.SP)
+        .activate(actor.U)
+        .message(actor.U, actor.C, `OAuth2 callback`)
+        .activate(actor.C)
         .message(actor.C, actor.SP, `fetch tokens`)
         .activate(actor.C);
 
-    const tokens = await getOAuthTokens(provider, code);
+    const tokens = await getAuthService(provider).getOAuthTokens(code);
 
     getSequencer().message(actor.C, actor.C, `save tokens`);
 
-    saveTokens(sessionId, tokens);
+    saveProviderTokens(sessionId, { provider, tokens});
 
     getSequencer()
         .deactivate(actor.C)
-        .response(actor.C, actor.SP, `redirect ${returnTo}`);
+        .response(actor.C, actor.U, `redirect ${returnTo}`)
+        .deactivate(actor.C, actor.U)
+        .noteOver(`user is now authenticated by ${provider}`, actor.U, actor.SP);
 
     res.redirect(returnTo);
 
@@ -54,12 +60,8 @@ export const oauthCallback = async (req: Request, res: Response) => {
 
   }
 
-  // Depict the presumed response from the Service Provider back to the User
-  // NOTE: the U and the SP are already active when the SP calls the callback;
-  //       when the callback returns, so does the SP and hence the U.
-  getSequencer()
-      .response(actor.SP, actor.U, `redirect ${returnTo}`)
-      .deactivate(actor.SP, actor.U);
+  // The browser was redirected to the callback, so when it returns the user's request completes.
+  getSequencer().deactivate(actor.U);
 
 };
 
@@ -81,8 +83,8 @@ export const sendEmail = async (req: Request, res: Response) => {
       .activate(actor.U, actor.C)
       .message(actor.C, actor.C, `lookup access token`);
 
-  const tokens = getTokens(sessionId);
-  if (!tokens || !tokens.accessToken) {
+  const providerTokens = getProviderTokens(sessionId);
+  if (!providerTokens?.tokens?.accessToken) {
 
     getSequencer()
         .response(actor.C, actor.U, "Unauthorized")
@@ -99,13 +101,10 @@ export const sendEmail = async (req: Request, res: Response) => {
         .activate(actor.SP);
 
     const { to, subject, text } = req.body;
-    await sendOAuthEmail(to, subject, text, tokens);
-
-    getSequencer().response(actor.SP, actor.C, `OK`);
+    await getEmailService(providerTokens.provider)
+        .sendOAuthEmail(to, subject, text, providerTokens.tokens);
 
     res.json({ message: 'Email sent successfully' });
-
-    getSequencer().response(actor.C, actor.U, 'OK');
 
   } catch (e) {
 
@@ -138,26 +137,25 @@ export const getAuthUrl = async (req: Request, res: Response) => {
   getSequencer().
     message(actor.U, actor.C, `get authorization`).
     activate(actor.U, actor.C).
-    message(actor.C, actor.SP, `get SP authorization URL`);
+    message(actor.C, actor.SP, `get ${provider} authorization URL`);
 
-  const authUrl = await getOAuthUrl({ provider, returnTo, sessionId });
-  console.log(`redirecting to OAuthUrl(${authUrl})`);
+  const authUrl = await getAuthService(provider).getOAuthUrl({ provider, returnTo, sessionId });
+  console.debug(`redirecting to OAuthUrl(${authUrl})`);
 
-  getSequencer().response(actor.C, actor.U, `redirect to ${actor.SP} for auth`);
+  getSequencer().response(actor.C, actor.U, `redirect to ${provider} for auth`);
 
   res.redirect(authUrl);
 
   // Depict a simplified approval dialog between the user and the Service Provider...
-  getSequencer().
-    deactivate(actor.C, actor.U).
-    message(actor.U, actor.SP, `request authorization`).
-    activate(actor.U, actor.SP).
-    response(actor.SP, actor.U, `are you sure?`).
-    deactivate(actor.SP, actor.U).
-    message(actor.U, actor.SP, `yes, I'm sure`).
-    activate(actor.U, actor.SP).
-    message(actor.SP, actor.SP, `Record authorization`);
-
+  getSequencer()
+    .deactivate(actor.C, actor.U)
+    .message(actor.U, actor.SP, `request authorization`)
+    .activate(actor.U, actor.SP)
+    .response(actor.SP, actor.U, `are you sure?`)
+    .deactivate(actor.SP, actor.U)
+    .message(actor.U, actor.SP, `yes, I'm sure`)
+    .activate(actor.U, actor.SP)
+    .message(actor.SP, actor.SP, `Record authorization`)
 };
 
 /**
@@ -179,8 +177,8 @@ export const listEmails = async (req: Request, res: Response) => {
     .activate(actor.U, actor.C)
     .message(actor.C, actor.C, `lookup access token`);
 
-  const tokens = getTokens(sessionId);
-  if (!tokens || !tokens.accessToken) {
+  const providerTokens = getProviderTokens(sessionId);
+  if (!providerTokens?.tokens?.accessToken) {
 
     getSequencer()
         .response(actor.C, actor.U, "Unauthorized")
@@ -199,14 +197,13 @@ export const listEmails = async (req: Request, res: Response) => {
     const { pageToken} = req.query;
     console.log(`fetching emails(pageToken=${pageToken})`);
 
-    const r = await listOAuthEmails(pageToken as string, tokens);
+    const r = await getEmailService(providerTokens.provider)
+      .listOAuthEmails(pageToken as string, providerTokens.tokens);
 
     res.json({
       emails: r.emails,
       nextPageToken: r.nextPageToken,
     });
-
-    getSequencer().response(actor.SP, actor.C, "OK");
 
   } catch (error) {
 
