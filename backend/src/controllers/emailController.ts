@@ -24,13 +24,13 @@ export const oauthCallback = async (req: Request, res: Response) => {
   try {
 
     getSequencer()
-        .response(actor.SP, actor.U, `redirect to OAuth2 callback`)
-        .deactivate(actor.SP)
-        .activate(actor.U)
-        .message(actor.U, actor.C, `OAuth2 callback`)
-        .activate(actor.C)
-        .message(actor.C, actor.SP, `fetch tokens`)
-        .activate(actor.C);
+      .response(actor.SP, actor.U, `redirect to OAuth2 callback`)
+      .deactivate(actor.SP)
+      .activate(actor.U)
+      .message(actor.U, actor.C, `OAuth2 callback`)
+      .activate(actor.C)
+      .message(actor.C, actor.SP, `fetch tokens`)
+      .activate(actor.C);
 
     const tokens = await getAuthService(provider).getOAuthTokens(code);
 
@@ -39,10 +39,10 @@ export const oauthCallback = async (req: Request, res: Response) => {
     saveProviderTokens(sessionId, { provider, tokens});
 
     getSequencer()
-        .deactivate(actor.C)
-        .response(actor.C, actor.U, `redirect ${returnTo}`)
-        .deactivate(actor.C, actor.U)
-        .noteOver(`user is now authenticated by ${provider}`, actor.U, actor.SP);
+      .deactivate(actor.C)
+      .response(actor.C, actor.U, `redirect ${returnTo}`)
+      .deactivate(actor.C, actor.U)
+      .noteOver(`user is now back on Consumer page,\\nauthenticated by ${provider}`, actor.U, actor.SP);
 
     res.redirect(returnTo);
 
@@ -50,8 +50,8 @@ export const oauthCallback = async (req: Request, res: Response) => {
     console.error("exception", e);
 
     getSequencer()
-        .response(actor.C, actor.U, `callback returned error`)
-        .deactivate(actor.C);
+      .response(actor.C, actor.U, `callback returned error`)
+      .deactivate(actor.C);
 
     res.status(500).json({ error: 'Failed to get tokens' });
   } finally {
@@ -79,16 +79,16 @@ export const sendEmail = async (req: Request, res: Response) => {
   }
 
   getSequencer()
-      .message(actor.U, actor.C, `send email`)
-      .activate(actor.U, actor.C)
-      .message(actor.C, actor.C, `lookup access token`);
+    .message(actor.U, actor.C, `send email`)
+    .activate(actor.U, actor.C)
+    .message(actor.C, actor.C, `lookup access token`);
 
   const providerTokens = getProviderTokens(sessionId);
   if (!providerTokens?.tokens?.accessToken) {
 
     getSequencer()
-        .response(actor.C, actor.U, "Unauthorized")
-        .deactivate(actor.C, actor.U);
+      .response(actor.C, actor.U, "Unauthorized")
+      .deactivate(actor.C, actor.U);
 
     res.status(401).json({});
     return;
@@ -97,12 +97,12 @@ export const sendEmail = async (req: Request, res: Response) => {
   try {
 
     getSequencer()
-        .message(actor.C, actor.SP, `send email with access token`)
-        .activate(actor.SP);
+      .message(actor.C, actor.SP, `send email with access token`)
+      .activate(actor.SP);
 
     const { to, subject, text } = req.body;
     await getEmailService(providerTokens.provider)
-        .sendOAuthEmail(to, subject, text, providerTokens.tokens);
+      .sendOAuthEmail(to, subject, text, providerTokens.tokens);
 
     res.json({ message: 'Email sent successfully' });
 
@@ -134,10 +134,11 @@ export const getAuthUrl = async (req: Request, res: Response) => {
     return;
   }
 
-  getSequencer().
-    message(actor.U, actor.C, `get authorization`).
-    activate(actor.U, actor.C).
-    message(actor.C, actor.SP, `get ${provider} authorization URL`);
+  getSequencer()
+    .noteOver("user clicks 'Login' button", actor.U, actor.C)
+    .message(actor.U, actor.C, `get authorization`)
+    .activate(actor.U, actor.C)
+    .message(actor.C, actor.SP, `get ${provider} authorization URL`);
 
   const authUrl = await getAuthService(provider).getOAuthUrl({ provider, returnTo, sessionId });
   console.debug(`redirecting to OAuthUrl(${authUrl})`);
@@ -148,9 +149,10 @@ export const getAuthUrl = async (req: Request, res: Response) => {
 
   // Depict a simplified approval dialog between the user and the Service Provider...
   getSequencer()
-    .deactivate(actor.C, actor.U)
+    .deactivate(actor.C)
+    .activate(actor.U)
     .message(actor.U, actor.SP, `request authorization`)
-    .activate(actor.U, actor.SP)
+    .activate(actor.SP)
     .response(actor.SP, actor.U, `are you sure?`)
     .deactivate(actor.SP, actor.U)
     .message(actor.U, actor.SP, `yes, I'm sure`)
@@ -181,8 +183,8 @@ export const listEmails = async (req: Request, res: Response) => {
   if (!providerTokens?.tokens?.accessToken) {
 
     getSequencer()
-        .response(actor.C, actor.U, "Unauthorized")
-        .deactivate(actor.C, actor.U);
+      .response(actor.C, actor.U, "Unauthorized")
+      .deactivate(actor.C, actor.U);
 
     res.status(401).json({});
     return;
@@ -191,11 +193,11 @@ export const listEmails = async (req: Request, res: Response) => {
   try {
 
     getSequencer()
-        .message(actor.C, actor.SP, `fetch emails`)
-        .activate(actor.C, actor.SP);
+      .message(actor.C, actor.SP, `fetch emails`)
+      .activate(actor.C, actor.SP);
 
     const { pageToken} = req.query;
-    console.log(`fetching emails(pageToken=${pageToken})`);
+    console.debug(`fetching emails(pageToken=${pageToken})`);
 
     const r = await getEmailService(providerTokens.provider)
       .listOAuthEmails(pageToken as string, providerTokens.tokens);
