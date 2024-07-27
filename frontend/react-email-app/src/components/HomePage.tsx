@@ -22,7 +22,7 @@ const HomePage = () => {
             <MenuBar providerId={providerId} onChange={newProviderId => setProviderId(newProviderId)}/>
             <main className={styles.content}>
 
-                <h2>Perform Actions on Behalf of Authenticated User</h2>
+                <h2>Access Email on Behalf of Authenticated User</h2>
 
                 <h3>Send Email</h3>
                 <div className="inner-container">

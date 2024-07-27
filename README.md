@@ -5,6 +5,17 @@ and example implementation of a web application leveraging [OAuth2] to allow use
 e-mail resources hosted on e-mail Service Providers (e.g., Google Gmail, Microsoft Outlook) to satisfy
 requirements of a Consumer (such as this PoC) application.
 
+## Demo
+
+The following demo captures a session in which the application sends and receives email on behalf of
+its user in both Gmail and Outlook.
+
+Towards the end of the demo, the "sequence log" (recorded by the application to reflect the flow of
+actions taken by the user) is pasted into [websequencediagrams.com](https://www.websequencediagrams.com)
+to illustrate the OAuth2 flow that transpired.
+
+![240727-oauth2emailbridge-demo.mov](./resources/240727-oauth2emailbridge-demo.mov)
+
 ## Components
 
 The (source) components of this project include those in the sub-folders:

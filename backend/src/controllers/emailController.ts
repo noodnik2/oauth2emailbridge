@@ -56,7 +56,7 @@ export const oauthCallback = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to get tokens' });
   } finally {
 
-    getSequencer().deactivate(actor.C, actor.SP);
+    getSequencer().deactivate(actor.U, actor.C, actor.SP);
 
   }
 
