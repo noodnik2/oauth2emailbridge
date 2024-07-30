@@ -68,5 +68,10 @@ way to help understand what is happening, and how the OAuth2 interaction is carr
 
 ## Additional Resources
 
+### Wishlist
+
+A yet-to-be implemented - but identified as desired by this PoC - "Centralized" OAuth2
+token provider is described in [README-Centralized](./README-Centralized.md).
+
 ### Useful Links
 - [Aarpn Parecki's oauth-2-simplified](https://aaronparecki.com/oauth-2-simplified)
