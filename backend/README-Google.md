@@ -60,10 +60,28 @@ tunnels to your local development server.
 
 1. Install `ngrok`:
    - Download and install `ngrok` from [ngrok.com](https://ngrok.com).
-1. Start ngrok:
-   - Run `ngrok` to tunnel your local server port (e.g., `3000`):
+1. Set up / initialize ngrok:
+   - Run `ngrok` to tunnel your local server port (e.g., `3000`) after logging in to NGrok
+     website and retrieving the token value (i.e., substitute the token for `____` below):
      - `$ ngrok config add-authtoken _____`
-     - `$ ngrok http http://localhost:3000`
+   - _NOTE: you only need to do this once, as it will record its credentials within its
+     own configuration folder (use `ngrok config check` to see where).
+1. Create the `ngrok` tunnel connection  
+   - `$ ngrok http http://localhost:3000`
+   - _NOTE: if you want to create more than one tunnel, with the free version of `ngrok`
+     you'll need to create a separate configuration file listing them both, then use the
+     `ngrok --config ___ start --all` command instead; e.g.:_
+       - ```shell
+         version: "2"
+         tunnels:
+           frontend:
+             proto: http
+             addr: 8080
+           backend:
+             proto: http
+             addr: 3000
+             inspect: false
+         ```
 1. Get the `ngrok` URL:
    - `ngrok` will provide a public URL (e.g., https://abcd1234.ngrok.io).
 1. Enter the `ngrok` URL in Google Cloud Console:

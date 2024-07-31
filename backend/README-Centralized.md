@@ -33,9 +33,24 @@ this goal:
 
 ### Ideation
 
-A proposed high-level interaction leveraging `Auth0` is depicted below:
+An example of a centralized solution could be initiated from the
+[Auth0 Dashboard](https://manage.auth0.com/dashboard).  From there, a new "Application"
+could be created into which a "social connection" for each email provider (e.g., one for
+Google, one for Microsoft) would be added.  For each of these email provider connections,
+the OAuth2 registration details would be entered (e.g., the relevant OAuth2 `scope` values
+needed by our application).
+
+The PoC client would then use [Auth0] as its (only needed) OAuth2 server, sending a `scope`
+value of `openid profile` (selecting `OpenID` functionality), enabling the end-user to
+authenticate using their choice of the configured email provider connections (per above).
+
+Once the user session is authenticated, the _Token ID_ value returned by `OpenID` will enable 
+the PoC client to know which email provider is authorized, and therefore which APIs to use
+for accessing the user's e-mail.
 
 #### Sequence Overview using `Auth0`
+
+A proposed high-level interaction leveraging `Auth0` is depicted below:
 
 ![auth0-proposal-seq](../resources/240729-auth0-proposal-seq.png)
 
