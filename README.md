@@ -43,6 +43,7 @@ app (such as this one) to gain authorization to access functionality in a Servic
 as Google GMail) on behalf of a user.
 
 ![oauth2-sequence.png](./resources/oauth2-sequence.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnoodnik2%2Foauth2emailbridge.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnoodnik2%2Foauth2emailbridge?ref=badge_shield)
 
 If you paste the following text into the [websequencediagrams.com App](https://www.websequencediagrams.com/app),
 you can customize the sequence and explore the interaction in more detail, as your needs require.
@@ -110,3 +111,7 @@ Some of the more helpful resources I've found relevant to this project include:
 - [ngrok](https://ngrok.com/)
 
 [OAuth2]: https://oauth.net/2/
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnoodnik2%2Foauth2emailbridge.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnoodnik2%2Foauth2emailbridge?ref=badge_large)
