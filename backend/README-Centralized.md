@@ -1,4 +1,4 @@
-# Centralized OAuth2 Service Provider
+# Centralized OAuth2 Token Authority
 
 A significant clarification gained from carrying out this PoC is the realization of the
 need for ... _something else_...

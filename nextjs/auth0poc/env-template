@@ -1,0 +1,11 @@
+# Template for what would be your ".env" file: copy to ".env" & customize it as needed
+# The AUTH0_ISSUER_BASE_URL is the "Auth0 Domain" prepended with "https://"
+AUTH0_ISSUER_BASE_URL=https://dev-whateverwhatever.us.auth0.com
+# The AUTH0_CLIENT_ID is what's issued when you create the "Application" in Auth0
+AUTH0_CLIENT_ID=SoMe32CharacterValueThisWillBe32
+# The AUTH0_CLIENT_SECRET is also issued when you create the "Application" in Auth0
+AUTH0_CLIENT_SECRET=SoMe64CharacterValueThisWillBe64SoMe64CharacterValueThisWillBe64
+# The AUTH0_SECRET is a random hex string of length 32
+AUTH0_SECRET=SoMe32CharacterValueThisWillBe32
+# The AUTH0_BASE_URL is the base URL of your application (can be running locally).
+AUTH0_BASE_URL=http://localhost:4040
